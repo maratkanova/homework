@@ -1,0 +1,486 @@
+1)	Task: Users and Groups  
+
+Используйте команды: groupadd, useradd, passwd, chage и другие. 
+Создайте группу sales с GID 4000 и пользователей bob, alice, eve c основной группой sales. 
+[root@localhost ~]# groupadd -g 4000 sales
+[root@localhost ~]# grep sales /etc/group
+sales:x:4000:
+
+[root@localhost ~]# useradd bob
+[root@localhost ~]# usermod bob -g sales
+
+[root@localhost ~]# useradd alice -g sales
+[root@localhost ~]# id alice
+uid=1002(alice) gid=4000(sales) groups=4000(sales)
+
+[root@localhost ~]# useradd eve -g 4000
+[root@localhost ~]# id eve
+uid=1003(eve) gid=4000(sales) groups=4000(sales)
+
+Измените пользователям пароли.
+
+[root@localhost ~]# passwd bob
+Changing password for user bob.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+[root@localhost ~]# passwd alice
+Changing password for user alice.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+[root@localhost ~]# passwd eve
+Changing password for user eve.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+
+ Все новые аккаунты должны обязательно менять свои пароли каждый 30 дней.
+
+ В файле /etc/login.defs
+Установить  PASS_MAX_DAYS 30
+
+How to check:
+[root@localhost ~]# useradd kloun
+[root@localhost ~]# chage -l kloun
+Last password change                                    : Nov 10, 2018
+Password expires                                        : Dec 10, 2018
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 30
+Number of days of warning before password expires       : 7
+
+ Новые аккаунты группы sales должны истечь по окончанию 90 дней срока, 
+[root@localhost ~]# chage -E 2019-02-06 -M 90 -I 0 alice
+Проверка
+
+[root@localhost ~]# chage -l alice
+Last password change                                    : Nov 08, 2018
+Password expires                                        : Feb 06, 2019
+Password inactive                                       : Feb 06, 2019
+Account expires                                         : Feb 06, 2019
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 90
+Number of days of warning before password expires       : 7
+[root@localhost ~]# chage -E 2019-02-06 eve
+
+Проверка
+[root@localhost ~]# chage -l eve
+Last password change                                    : Nov 08, 2018
+Password expires                                        : Feb 06, 2019
+Password inactive                                       : Feb 06, 2019
+Account expires                                         : Feb 06, 2019
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 90
+Number of days of warning before password expires       : 7
+
+а Bob должен изменять его пароль каждые 15 дней.  
+
+chage -M 15 -W 5 bob
+chage -I 75 bob
+
+[root@localhost ~]# chage -E 2019-02-06 bob
+
+Проверка  В /etc/shadow  или
+
+[root@localhost ~]# chage -l bob
+Last password change                                    : Nov 08, 2018
+Password expires                                        : Nov 23, 2018
+Password inactive                                       : Feb 06, 2019
+Account expires                                         : Feb 06, 2019
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 15
+Number of days of warning before password expires       : 5 Дополнительно
+ Заставьте пользователей сменить пароль после первого логина.   
+
+[root@localhost ~]# chage -d 0 bob; chage -d 0 alice;  chage -d 0 eve
+
+Проверка: 
+
+login as: bob
+bob@192.168.56.102's password:
+You are required to change your password immediately (root enforced)
+Last login: Thu Nov  8 11:30:36 2018
+WARNING: Your password has expired.
+You must change your password now and login again!
+Changing password for user bob.
+Changing password for bob.
+(current) UNIX password:
+
+login as: alice
+alice@192.168.56.102's password:
+You are required to change your password immediately (root enforced)
+WARNING: Your password has expired.
+You must change your password now and login again!
+Changing password for user alice.
+Changing password for alice.
+(current) UNIX password:
+
+Предварительный шаг  
+Исследуйте, что такое /etc/login.defs и как работает.
+ Исследуйте, как работает команда date и как совместно использовать с chage. 
+
+2)	Task: Controlling access to files with Linux file system permissions
+
+  Используйте команды: su, mkdir, chown, chmod и другие.
+ Создайте трёх пользователей glen, antony, lesly.
+
+[root@localhost ~]# useradd antony
+
+[root@localhost ~]# ls /home
+alice  antony  bob  eve  glen  kloun  lesly  students  usertest
+ У вас должна быть директория /home/students, где эти три пользователя могут работать совместно с файлами. 
+
+[root@localhost home]# mkdir students
+
+Должен быть возможен только пользовательский и групповой доступ, создание и удаление файлов в /home/students. 
+Права до изменения:
+drwxr-xr-x. 2 root     root        6 Nov  8 23:26 students
+
+
+Файлы, созданные в этой директории, должны автоматически присваиваться группе студентов.  
+
+ [root@localhost ~]# groupadd students
+
+[root@localhost ~]# usermod -g students glen
+[root@localhost ~]# usermod -g students antony
+[root@localhost ~]# usermod -g students Lesly
+
+[root@localhost ~]# chown root:students /home/students
+[root@localhost ~]# chmod g+s /home/students
+
+[root@localhost ~]# chmod 770 /home/students
+После изменения прав: 
+[root@localhost ~]# ls -l /home
+drwxrws---. 2 root     students   68 Nov 10 18:38 students
+
+Проверка:
+[root@localhost students]# touch testfile+s
+[root@localhost students]# ls -l
+total 0
+-rw-r--r--. 1 root root     0 Nov 10 17:26 testfile
+-rw-r--r--. 1 root students 0 Nov 10 17:33 testfile+s
+
+[root@localhost ~]# su glen 
+[glen@localhost root]$ touch /home/students/fileglen
+[glen@localhost root]$ ls -l /home/students
+
+-rw-r--r--. 1 glen students 0 Nov 10 18:38 fileglen
+
+Предварительный шаг  
+Исследуйте для чего нужны bashrc и profile. 
+
+
+3)	Task: ACL
+
+  Детективное агентство Бейкер Стрит создает коллекцию совместного доступа для хранения файлов дел, в которых члены группы bakerstreet будут иметь права на чтение и запись. Ведущий детектив, Шерлок Холмс, решил, что члены группы scotlandyard также должны иметь возможность читать и писать в общую директорию. Тем не менее, Холмс считает, что инспектор Джонс является достаточно растерянным, и поэтому он должен иметь доступ только для чтения.  Миссис Хадсон только начала осваивать Linux и смогла создать общую директорию и скопировать туда несколько файлов. Но сейчас время чаепития, и она попросила вас закончить работу.
+
+ Ваша задача - завершить настройку директории общего доступа. Директория и всё её содержимое должно принадлежать группе bakerstreet,
+
+[root@localhost ~]# chgrp -R bakerstreet /share/cases
+
+
+
+при этом файлы должны обновляться для чтения и записи для владельца и группы (bakerstreet). 
+
+[root@localhost /]# setfacl -R -m g:bakerstreet:rw /share/cases
+[root@localhost /]# chmod -R g+s,g+t /share/cases
+
+Проверка: 
+[lestrade@localhost cases]$ ls -l
+
+
+
+У других пользователей не должно быть никаких разрешений. 
+[root@localhost ~]# chmod  777 /share 
+
+[root@localhost ~]# getfacl /share
+getfacl: Removing leading '/' from absolute path names
+# file: share
+# owner: root
+# group: root
+user::rwx
+group::rwx
+other::rwx
+
+[root@localhost ~]# chmod  760 /share/cases
+
+Проверка:
+
+[root@localhost ~]# ls -l /share
+total 0
+drwxrws---+ 2 root bakerstreet 79 Nov 11 15:57 cases
+
+Здесь видно, что новому документу присваивается группа bakerstreet, несмотря на то, что lestrade из scotlandyard; применяется ACL (+) и сохраняются права на чтение и запись:
+
+[root@localhost ~]# ls -l /share/cases
+total 8
+-rw-rw----+ 1 lestrade bakerstreet 19 Nov 11 15:58 lestrade
+-rwxrws---+ 1 root     bakerstreet 36 Nov 11 14:52 moriarty.txt
+-rwxrws---+ 1 root     bakerstreet  0 Nov 10 19:09 murders.txt
+
+
+Вам также необходимо предоставить доступы на чтение и запись для группы scotlandyard,
+
+[root@localhost ~]# setfacl -R -m d:g:scotlandyard:rw /share/cases
+[root@localhost ~]# setfacl -R -m d:g:bakerstreet:rw /share/cases
+
+
+[root@localhost ~]# setfacl -R -m g:bakerstreet:7 /share/cases
+
+
+ за исключением Jones, который может только читать документы. 
+[root@localhost /]# setfacl -m u:jones:5 /share/cases
+
+[root@localhost /]# setfacl -R -m d:u:jones:4 /share/cases
+
+setfacl -R -m u:jones:4 /share/cases
+ Где 4 r--, 5 r-x
+
+
+[jones@localhost cases]$ rm holmes
+rm: cannot remove ‘holmes’: Permission denied
+[jones@localhost cases]$ rm final_lestrade
+rm: cannot remove ‘final_lestrade’: Permission denied
+
+
+Убедитесь, что ваша настройка применима к существующим и будущим файлам. 
+
+[watson@localhost cases]$ getfacl /share/cases/
+[jones@localhost cases]$ getfacl /share/cases
+getfacl: Removing leading '/' from absolute path names
+# file: share/cases
+# owner: root
+# group: bakerstreet
+# flags: -st
+user::rwx
+user:jones:r-x
+group::r-x
+group:bakerstreet:rwx
+group:scotlandyard:rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:jones:r--
+default:group::r-x
+default:group:bakerstreet:rw-
+default:group:scotlandyard:rw-
+default:mask::rwx
+default:other::---
+
+
+Проверяем: 
+[root@localhost /]# getfacl /share/cases/murders.txt
+getfacl: Removing leading '/' from absolute path names
+# file: share/cases/murders.txt
+# owner: root
+# group: bakerstreet
+# flags: -st
+user::rwx
+user:jones:r--
+group::r--
+group:bakerstreet:rwx
+group:scotlandyard:rw-
+mask::rwx
+other::---
+
+[root@localhost /]# getfacl /share/cases/moriarty.txt
+getfacl: Removing leading '/' from absolute path names
+# file: share/cases/murders.txt
+# owner: root
+# group: bakerstreet
+# flags: -st
+user::rwx
+user:jones:r--
+group::r--
+group:bakerstreet:rwx
+group:scotlandyard:rw-
+mask::rwx
+other::---
+После установки всех разрешений в директории проверьте от каждого пользователя все его возможные доступы.  
+	
+[root@localhost ~]# su lestrade
+[lestrade@localhost root]$ cd /share/cases
+[lestrade@localhost cases]$ ls
+lestrade  lestrade+s  moriarty.txt  murders.txt
+[lestrade@localhost cases]$ nano moriarty.txt
+[lestrade@localhost cases]$ cat moriarty.txt
+I was here/ Holmes
+and Lestrade too!
+[lestrade@localhost cases]$ touch final_lestrade
+[lestrade@localhost cases]$ ls -l
+total 8
+-rw-rw----+ 1 lestrade bakerstreet  0 Nov 11 16:27 final_lestrade
+
+[lestrade@localhost cases]$ rm gregsonnew
+rm: cannot remove ‘gregsonnew’: Operation not permitted
+
+	Проверим возможность доступа пользователя, никак не относящего к этой истории:
+
+[lestrade@localhost cases]$ su usertest
+Password:
+[usertest@localhost cases]$ ls
+ls: cannot open directory .: Permission denied
+
+	
+[holmes@localhost cases]$ su gregson
+Password:
+[gregson@localhost cases]$ ls
+final_lestrade  lestrade  lestrade+s  moriarty.txt  murders.txt
+[gregson@localhost cases]$ nano moriarty.txt
+[gregson@localhost cases]$ head moriarty.txt
+I was here/ Holmes
+and Lestrade too!
+Holmes is here second time!
+Then Gregson...
+[gregson@localhost cases]$ nano final_lestrade
+[gregson@localhost cases]$ cat final_lestrade
+gregson try edit
+[gregson@localhost cases]$ touch gregson
+[gregson@localhost cases]$ ls -l
+total 12
+…
+-rw-rw----+ 1 gregson  bakerstreet  0 Nov 11 16:47 gregson
+
+ [gregson@localhost cases]$ rm final_lestrade
+rm: cannot remove ‘final_lestrade’: Operation not permitted
+[gregson@localhost cases]$ rm gregson
+
+	
+[root@localhost ~]# su jones
+[jones@localhost root]$ cd /share
+[jones@localhost share]$ ls
+cases
+[jones@localhost share]$ cd cases
+[jones@localhost cases]$ ls
+final_lestrade  gregsonnew  lestrade  moriarty.txt  murders.txt
+
+[jones@localhost cases]$ cat moriarty.txt
+I was here/ Holmes
+and Lestrade too!
+Holmes is here second time!
+Then Gregson...
+_______________
+ [jones@localhost cases]$ nano moriarty.txt
+[jones@localhost cases]$ touch jones
+touch: cannot touch ‘jones’: Permission denied
+
+[jones@localhost cases]$ cat final_lestrade
+gregson try edit
+[jones@localhost cases]$ nano final_lestrade
+
+
+[jones@localhost cases]$ touch jones
+touch: cannot touch ‘jones’: Permission denied
+[jones@localhost cases]$ head moriarty.txt
+I was here/ Holmes
+and Lestrade too!
+Holmes is here second time!
+Then Gregson...
+everybody can write here who have an access/ Even Watson! Кроме Джона!
+
+[jones@localhost cases]$ rm holmes
+rm: cannot remove ‘holmes’: Permission denied
+[jones@localhost cases]$ rm final_lestrade
+rm: cannot remove ‘final_lestrade’: Permission denied
+
+В итоге: когда Jones пытается удалить файл, задается вопрос действительно ли он хочет удалить файл. Отвечаем «да», и только потом появляется «Permission denied». В отличие от других пользователей: при попытке удалить файл сразу сообщение “rm: cannot remove ‘….’: Operation not permitted”
+
+	
+[jones@localhost cases]$ su holmes
+Password:
+[holmes@localhost cases]$ ls
+final_lestrade  gregsonnew  lestrade  moriarty.txt  murders.txt
+[holmes@localhost cases]$ touch holmes
+[holmes@localhost cases]$ ls -l
+…
+-rw-rw----+ 1 holmes   bakerstreet  0 Nov 11 17:43 holmes
+…
+ [holmes@localhost cases]$ rm gregsonnew
+rm: cannot remove ‘gregsonnew’: Operation not permitted
+[holmes@localhost cases]$ nano final_lestrade
+[holmes@localhost cases]$ cat final_lestrade
+gregson try edit
+Finally, Holmes can edit new doc too!!!I Hope...
+
+	
+[holmes@localhost cases]$ su watson
+Password:
+[watson@localhost cases]$ nano moriarty.txt
+[watson@localhost cases]$ cat moriarty.txt
+I was here/ Holmes
+and Lestrade too!
+Holmes is here second time!
+Then Gregson...
+everybody can write here who have an access/ Even Watson! Кроме Джона!
+
+[watson@localhost cases]$ touch watson
+[watson@localhost cases]$ rm holmes
+rm: cannot remove ‘holmes’: Operation not permitted
+[watson@localhost cases]$ rm final_lestrade
+rm: cannot remove ‘final_lestrade’: Operation not permitted
+
+
+Используйте команды: touch, mkdir, chgrp, chmod, getfacl, setfacl и другие. 
+Создайте общую директорию /shares/cases. 
+
+[root@localhost ~]# mkdir /share
+[root@localhost share]# mkdir cases
+[root@localhost cases]# touch murders.txt
+[root@localhost cases]# touch moriarty.txt
+Проверка: 
+[root@localhost cases]# ls
+moriarty.txt  murders.txt
+
+
+Создайте группу bakerstreet с пользователями holmes, watson. 
+
+[root@localhost cases]# groupadd bakerstreet
+[root@localhost cases]# useradd -g bakerstreet holmes
+[root@localhost cases]# useradd -g bakerstreet watson
+
+Создайте группу scotlandyard с пользователями lestrade, gregson, jones.
+
+[root@localhost cases]# groupadd scotlandyard
+[root@localhost cases]# useradd -g scotlandyard lestrade
+[root@localhost cases]# useradd -g scotlandyard gregson
+[root@localhost cases]# useradd -g scotlandyard jones
+
+ Задайте всем пользователям безопасные пароли.
+
+[root@localhost cases]# passwd holmes
+Changing password for user holmes.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+[root@localhost cases]# passwd watson
+Changing password for user watson.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+[root@localhost cases]# passwd lestrade
+Changing password for user lestrade.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+[root@localhost cases]# passwd gregson
+Changing password for user gregson.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+[root@localhost cases]# passwd jones
+Changing password for user jones.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+
+  Предварительный шаг
+ От суперпользователя создайте папку /share/cases и создайте внутри 2 файла murders.txt и moriarty.txt.
