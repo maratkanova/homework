@@ -1,0 +1,684 @@
+1)	Task: Repositories and Packages
+
+Найдите любые два rpm пакета, которые мы не использовали ранее, и установите их в систему. Одна установка должна проходить через rpm, другая через yum.
+Вы должны показать часть истории и лога установки.
+
+[root@localhost ~]# wget https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/a/apachetop-0.15.6-1.el7.x86_64.rpm
+--2018-11-25 19:10:06--  https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/a/apachetop-0.15.6-1.el7.x86_64.rpm
+Resolving dl.fedoraproject.org (dl.fedoraproject.org)... 209.132.181.23, 209.132.181.24, 209.132.181.25
+Connecting to dl.fedoraproject.org (dl.fedoraproject.org)|209.132.181.23|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 37792 (37K) [application/x-rpm]
+Saving to: ‘apachetop-0.15.6-1.el7.x86_64.rpm’
+
+100%[========================================>] 37,792       169KB/s   in 0.2s
+
+2018-11-25 19:10:13 (169 KB/s) - ‘apachetop-0.15.6-1.el7.x86_64.rpm’ saved [37792/37792]
+
+[root@localhost ~]# ls
+anaconda-ks.cfg                    filehard.txt                s1200.1
+ansible-2.7.1-1.el7.noarch.rpm     filesoft.txt                testfile2
+apachetop-0.15.6-1.el7.x86_64.rpm  qwt-6.1.1-1.el7.x86_64.rpm  url?sa=i
+fileforlocate                      s1200
+
+[root@localhost ~]# rpm -i apachetop-0.15.6-1.el7.x86_64.rpm
+
+
+
+[root@localhost ~]# yum install android-tools
+Loaded plugins: fastestmirror
+Determining fastest mirrors
+epel/x86_64/metalink                                       |  28 kB  00:00:00
+ * base: mirror.awanti.com
+ * epel: fedora-epel.koyanet.lv
+ * extras: mirror.logol.ru
+ * updates: mirror.logol.ru
+base                                                       | 3.6 kB  00:00:00
+epel                                                       | 3.2 kB  00:00:00
+extras                                                     | 3.4 kB  00:00:00
+updates                                                    | 3.4 kB  00:00:00
+(1/2): epel/x86_64/updateinfo                              | 931 kB  00:00:07
+(2/2): epel/x86_64/primary                                 | 3.6 MB  00:00:08
+epel                                                                  12718/12718
+Resolving Dependencies
+--> Running transaction check
+---> Package android-tools.x86_64 0:20130123git98d0789-5.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+==================================================================================
+ Package             Arch         Version                        Repository  Size
+==================================================================================
+Installing:
+ android-tools       x86_64       20130123git98d0789-5.el7       epel       130 k
+
+Transaction Summary
+==================================================================================
+Install  1 Package
+
+Total download size: 130 k
+Installed size: 297 k
+Is this ok [y/d/N]: y
+Downloading packages:
+android-tools-20130123git98d0789-5.el7.x86_64.rpm          | 130 kB  00:00:05
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+Warning: RPMDB altered outside of yum.
+  Installing : android-tools-20130123git98d0789-5.el7.x86_64                  1/1
+  Verifying  : android-tools-20130123git98d0789-5.el7.x86_64                  1/1
+
+Installed:
+  android-tools.x86_64 0:20130123git98d0789-5.el7
+
+Complete!
+
+Проверка:
+[root@localhost ~]# yum history
+Loaded plugins: fastestmirror
+ID     | Command line             | Date and time    | Action(s)      | Altered
+-------------------------------------------------------------------------------
+    34 | install android-tools    | 2018-11-25 19:17 | Install        |    1  <
+
+[root@localhost ~]# yum list installed | grep android
+android-tools.x86_64                  20130123git98d0789-5.el7         @epel
+
+[root@localhost ~]# tail -1 /var/log/yum.log
+Nov 25 19:17:43 Installed: android-tools-20130123git98d0789-5.el7.x86_64
+
+
+[root@localhost ~]# rpm -qa --last
+android-tools-20130123git98d0789-5.el7.x86_64 Sun 25 Nov 2018 19:17:43 MSK
+apachetop-0.15.6-1.el7.x86_64                 Sun 25 Nov 2018 19:11:08 MSK
+
+Удалите оба пакета со всеми установленными зависимостями различными способами.
+
+[root@localhost ~]# yum remove android-tools
+Loaded plugins: fastestmirror
+Resolving Dependencies
+--> Running transaction check
+---> Package android-tools.x86_64 0:20130123git98d0789-5.el7 will be erased
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+========================================================================================================================================================================
+ Package                                  Arch                              Version                                              Repository                        Size
+========================================================================================================================================================================
+Removing:
+ android-tools                            x86_64                            20130123git98d0789-5.el7                             @epel                            297 k
+
+Transaction Summary
+========================================================================================================================================================================
+Remove  1 Package
+
+Installed size: 297 k
+Is this ok [y/N]: y
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Erasing    : android-tools-20130123git98d0789-5.el7.x86_64                                                                                                        1/1
+  Verifying  : android-tools-20130123git98d0789-5.el7.x86_64                                                                                                        1/1
+
+Removed:
+  android-tools.x86_64 0:20130123git98d0789-5.el7
+
+Complete!
+
+[root@localhost ~]# rpm -e apachetop
+
+Проверка:
+[root@localhost ~]# yum history
+Loaded plugins: fastestmirror
+ID     | Command line             | Date and time    | Action(s)      | Altered
+-------------------------------------------------------------------------------
+    35 | remove android-tools     | 2018-11-25 19:44 | Erase          |    1
+    34 | install android-tools    | 2018-11-25 19:17 | Install        |    1  <
+
+
+Найдите и установите дополнительный репозиторий для вашей системы (не EPEL). 
+
+[root@localhost ~]# yum install centos-release-scl
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.awanti.com
+ * epel: fedora-epel.koyanet.lv
+ * extras: mirror.logol.ru
+ * updates: mirror.logol.ru
+Resolving Dependencies
+--> Running transaction check
+---> Package centos-release-scl.noarch 0:2-2.el7.centos will be installed
+--> Processing Dependency: centos-release-scl-rh for package: centos-release-scl-2-2.el7.centos.noarch
+--> Running transaction check
+---> Package centos-release-scl-rh.noarch 0:2-2.el7.centos will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+========================================================================================================================================================================
+ Package                                          Arch                              Version                                     Repository                         Size
+========================================================================================================================================================================
+Installing:
+ centos-release-scl                               noarch                            2-2.el7.centos                              extras                             12 k
+Installing for dependencies:
+ centos-release-scl-rh                            noarch                            2-2.el7.centos                              extras                             12 k
+
+Transaction Summary
+========================================================================================================================================================================
+Install  1 Package (+1 Dependent package)
+
+Total download size: 24 k
+Installed size: 39 k
+Is this ok [y/d/N]: н
+Is this ok [y/d/N]: y
+Downloading packages:
+(1/2): centos-release-scl-rh-2-2.el7.centos.noarch.rpm                                                                                           |  12 kB  00:00:05
+(2/2): centos-release-scl-2-2.el7.centos.noarch.rpm                                                                                              |  12 kB  00:00:05
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                                                   4.1 kB/s |  24 kB  00:00:05
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+Warning: RPMDB altered outside of yum.
+  Installing : centos-release-scl-rh-2-2.el7.centos.noarch                                                                                                          1/2
+  Installing : centos-release-scl-2-2.el7.centos.noarch                                                                                                             2/2
+  Verifying  : centos-release-scl-rh-2-2.el7.centos.noarch                                                                                                          1/2
+  Verifying  : centos-release-scl-2-2.el7.centos.noarch                                                                                                             2/2
+
+Installed:
+  centos-release-scl.noarch 0:2-2.el7.centos
+
+Dependency Installed:
+  centos-release-scl-rh.noarch 0:2-2.el7.centos
+
+Complete!
+
+Активируйте его.
+
+В файлах убедимся, что enabled=1
+[root@localhost ~]# nano /etc/yum.repos.d/CentOS-SCLo-scl.repo
+[root@localhost ~]# nano /etc/yum.repos.d/CentOS-SCLo-scl-rh.repo
+
+Скачайте любым способ из него пакет на ваш выбор.
+
+[root@localhost ~]# yum install python33
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.awanti.com
+ * epel: fedora-epel.koyanet.lv
+ * extras: mirror.logol.ru
+ * updates: mirror.logol.ru
+Resolving Dependencies
+--> Running transaction check
+---> Package python33.x86_64 0:1.1-13.el7 will be installed
+--> Processing Dependency: python33-runtime for package: python33-1.1-13.el7.x86_64
+
+………………………………………………………..……
+Installed:
+  python33.x86_64 0:1.1-13.el7
+
+Dependency Installed:
+  python33-python.x86_64 0:3.3.2-16.el7                    python33-python-devel.x86_64 0:3.3.2-16.el7         python33-python-docutils.noarch 0:0.11-1.el7
+  python33-python-jinja2.noarch 0:2.6-12.el7               python33-python-libs.x86_64 0:3.3.2-16.el7          python33-python-markupsafe.noarch 0:0.11-10.el7
+  python33-python-nose.noarch 0:1.3.0-3.el7                python33-python-pygments.noarch 0:1.5-3.el7         python33-python-setuptools.noarch 0:0.9.8-3.el7
+  python33-python-simplejson.x86_64 0:3.2.0-2.el7          python33-python-sphinx.noarch 0:1.1.3-8.el7         python33-python-sqlalchemy.noarch 0:0.7.9-5.el7
+  python33-python-virtualenv.noarch 0:1.10.1-2.el7         python33-runtime.x86_64 0:1.1-13.el7                scl-utils.x86_64 0:20130529-18.el7_4
+
+Complete!
+
+Вы должны показать часть истории и лога установки.
+
+Проверка:
+[root@localhost ~]# scl --list
+python33
+
+Удалите пакет и репозиторий.
+
+[root@localhost ~]# yum remove python33
+Loaded plugins: fastestmirror
+Resolving Dependencies
+--> Running transaction check
+---> Package python33.x86_64 0:1.1-13.el7 will be erased
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+========================================================================================================================================================================
+ Package                               Arch                                Version                                   Repository                                    Size
+========================================================================================================================================================================
+Removing:
+ python33                              x86_64                              1.1-13.el7                                @centos-sclo-rh                              0.0
+
+Transaction Summary
+========================================================================================================================================================================
+Remove  1 Package
+
+Installed size: 0
+Is this ok [y/N]: y
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Erasing    : python33-1.1-13.el7.x86_64                                                                                                                           1/1
+  Verifying  : python33-1.1-13.el7.x86_64                                                                                                                           1/1
+
+Removed:
+  python33.x86_64 0:1.1-13.el7
+
+Complete!
+
+
+[root@localhost ~]# yum remove centos-release-scl
+Loaded plugins: fastestmirror
+Resolving Dependencies
+--> Running transaction check
+---> Package centos-release-scl.noarch 0:2-2.el7.centos will be erased
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+========================================================================================================================================================================
+ Package                                        Arch                               Version                                    Repository                           Size
+========================================================================================================================================================================
+Removing:
+ centos-release-scl                             noarch                             2-2.el7.centos                             @extras                              19 k
+
+Transaction Summary
+========================================================================================================================================================================
+Remove  1 Package
+
+Installed size: 19 k
+Is this ok [y/N]: y
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Erasing    : centos-release-scl-2-2.el7.centos.noarch                                                                                                             1/1
+warning: /etc/yum.repos.d/CentOS-SCLo-scl.repo saved as /etc/yum.repos.d/CentOS-SCLo-scl.repo.rpmsave
+  Verifying  : centos-release-scl-2-2.el7.centos.noarch                                                                                                             1/1
+
+Removed:
+  centos-release-scl.noarch 0:2-2.el7.centos
+
+Complete!
+
+Проверим удалился ли репозиторий: 
+
+[root@localhost ~]#  ls /etc/yum.repos.d/
+CentOS-Base.repo  CentOS-Debuginfo.repo  CentOS-Media.repo             CentOS-SCLo-scl-rh.repo  CentOS-Vault.repo  epel-testing.repo
+CentOS-CR.repo    CentOS-fasttrack.repo  CentOS-SCLo-scl.repo.rpmsave  CentOS-Sources.repo      epel.repo
+
+Осталось 2 файла. Однако, в yum repolist стало значительно меньше записей, связанных с scl.
+
+[root@localhost ~]# yum repolist
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.awanti.com
+ * epel: fedora-epel.koyanet.lv
+ * extras: mirror.logol.ru
+ * updates: mirror.logol.ru
+repo id                                                                  repo name                                                                                status
+base/7/x86_64                                                            CentOS-7 - Base                                                                           9,911
+centos-sclo-rh/x86_64                                                    CentOS-7 - SCLo rh                                                                        8,099
+centos-sclo-rh-debuginfo/x86_64                                          CentOS-7 - SCLo rh Debuginfo                                                                561
+centos-sclo-rh-source                                                    CentOS-7 - SCLo rh Sources                                                                    0
+centos-sclo-rh-testing/x86_64                                            CentOS-7 - SCLo rh Testing                                                                9,590
+epel/x86_64                                                              Extra Packages for Enterprise Linux 7 - x86_64                                           12,718
+extras/7/x86_64                                                          CentOS-7 - Extras                                                                           434
+updates/7/x86_64                                                         CentOS-7 - Updates                                                                        1,614
+repolist: 42,927
+
+
+Удалим файлы вручную 
+
+[root@localhost ~]# rm /etc/yum.repos.d/CentOS-SCLo-scl.repo.rpmsave
+rm: remove regular file ‘/etc/yum.repos.d/CentOS-SCLo-scl.repo.rpmsave’? y
+[root@localhost ~]# rm /etc/yum.repos.d/CentOS-SCLo-scl-rh.repo
+rm: remove regular file ‘/etc/yum.repos.d/CentOS-SCLo-scl-rh.repo’? y
+
+И проверим 
+
+[root@localhost ~]# yum repolist
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.awanti.com
+ * epel: fedora-epel.koyanet.lv
+ * extras: mirror.logol.ru
+ * updates: mirror.logol.ru
+repo id                                                           repo name                                                                                       status
+base/7/x86_64                                                     CentOS-7 - Base                                                                                  9,911
+epel/x86_64                                                       Extra Packages for Enterprise Linux 7 - x86_64                                                  12,718
+extras/7/x86_64                                                   CentOS-7 - Extras                                                                                  434
+updates/7/x86_64                                                  CentOS-7 - Updates                                                                               1,614
+repolist: 24,677
+
+Дополнительно
+ Создайте и установите rpm пакет, который будет запускать скрипт epamstudent. Он должен получать текст из консоли и выводить его после строки Your text: на новой строке.
+
+Предварительный шаг  
+Воспользуетесь EPEL репозиторием для поиска пакетов - https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/
+
+2)	Task: Work with files
+
+  Создайте отчет по логам из /var/log и сохраните в текстовый файл.
+(список всех файлов, директорий, поддиректорий)
+
+[root@localhost /]# ls -la -s -R /var/log >> /media/sf_DevOps_EPAM_2018/lsvarlog.txt
+
+Или 
+
+[root@localhost /]# du -a -h /var/log >> /media/sf_DevOps_EPAM_2018/duvarlog.txt
+Но тут не показывает скрытые файлы (. .. )
+
+где
+-h - --human-readable  print sizes in human readable format (e.g., 1K 234M 2G)
+
+Создайте отчет по размерам файлов и папок директории /home и сохраните в текстовый файл.
+
+[root@localhost /]# ls -a -s -S /home >> /media/sf_DevOps_EPAM_2018/lshome.txt
+
+Или 
+
+[root@localhost /]# du -a -h -L /home >> /media/sf_DevOps_EPAM_2018/duhome.txt
+Но здесь тоже не показывает скрытые файлы
+
+Для пользователей Alice и Bob создайте общую папку
+
+[root@localhost /]# mkdir /media/alicebob
+
+ и два общих файла, 
+
+[root@localhost /]# touch /media/alicebob/file1; touch /media/alicebob/file2
+
+и создайте в их домашних директориях все виды ссылок из этих объектов.
+
+Создание Hard link
+[root@localhost /]# ln /media/alicebob/file1 /home/alice/filehard1
+[root@localhost /]# echo "hello" >> /media/alicebob/file1
+[root@localhost /]# echo "world" >> /home/alice/filehard1
+[root@localhost /]# cat /home/alice/filehard1
+hello
+world
+
+[root@localhost /]# ln /media/alicebob/file1 /home/bob/filehard2
+
+[root@localhost /]# echo "ищиworld" >> /home/bob/filehard2
+[root@localhost /]# echo "bobworld" >> /home/bob/filehard2
+[root@localhost /]# cat /home/alice/filehard1
+hello
+world
+ищиworld
+bobworld
+
+[root@localhost /]# cat /home/bob/filehard2
+hello
+world
+ищиworld
+bobworld
+
+
+[root@localhost /]# cat /media/alicebob/file1
+hello
+world
+ищиworld
+bobworld
+
+Создание Soft link
+[root@localhost /]# ln -s /media/alicebob/file2 /home/bob/filesoft2
+[root@localhost /]# ln -s /media/alicebob/file2 /home/alice/filesoft1
+
+[root@localhost /]# echo "bobworld" >> /home/bob/filesoft2
+[root@localhost /]# echo "alice world" >> /home/alice/filesoft1
+[root@localhost /]# echo "hello" >> /media/alicebob/file2
+
+[root@localhost /]# cat /media/alicebob/file2
+bobworld
+alice world
+hello
+
+Проверка
+
+[root@localhost /]# ls -l /home/alice
+total 4
+-rw-r--r--. 3 root root 33 Nov 27 15:43 filehard1
+lrwxrwxrwx. 1 root root 21 Nov 27 15:57 filesoft1 -> /media/alicebob/file2
+[root@localhost /]# ls -l /home/bob
+total 4
+-rw-r--r--. 3 root root 33 Nov 27 15:43 filehard2
+lrwxrwxrwx. 1 root root 21 Nov 27 15:57 filesoft2 -> /media/alicebob/file2
+
+[root@localhost /]# ls -l /media/alicebob
+total 8
+-rw-r--r--. 3 root root 33 Nov 27 15:43 file1
+-rw-r--r--. 1 root root 27 Nov 27 15:58 file2
+
+Удалите эти объекты 
+
+[root@localhost /]# rm /media/alicebob/file1
+rm: remove regular file ‘/media/alicebob/file1’? y
+
+[root@localhost /]# rm /media/alicebob/file2
+rm: remove regular file ‘/media/alicebob/file2’? y
+
+[root@localhost /]# ls -l /media/alicebob
+total 0
+
+и выведите результаты обращения к ссылкам. 
+
+[root@localhost /]# cat /home/alice/filehard1
+hello
+world
+ищиworld
+bobworld
+[root@localhost /]# cat /home/alice/filesoft1
+cat: /home/alice/filesoft1: No such file or directory
+
+[root@localhost /]# cat /home/bob/filehard2
+hello
+world
+ищиworld
+bobworld
+[root@localhost /]# cat /home/bob/filesoft2
+cat: /home/bob/filesoft2: No such file or directory
+
+Удалите ссылки.
+
+[root@localhost /]# rm /home/alice/filesoft1 /home/alice/filehard1
+rm: remove symbolic link ‘/home/alice/filesoft1’? y
+rm: remove regular file ‘/home/alice/filehard1’? y
+[root@localhost /]# rm /home/bob/filesoft2 /home/bob/filehard2
+rm: remove symbolic link ‘/home/bob/filesoft2’? y
+rm: remove regular file ‘/home/bob/filehard2’? y
+
+Создайте директорию trash и
+[root@localhost /]# mkdir trash
+[root@localhost ~]# chmod 777 /trash
+
+ добавьте в неё поддиректории и файлы от нескольких пользователей в любом порядке.
+[root@localhost ~]# su usertest
+[usertest@localhost root]$ mkdir /trash/usertestdir
+[usertest@localhost root]$ touch /trash/usertestdir/file
+
+[usertest@localhost root]$ su alice
+Password:
+[alice@localhost root]$ mkdir /trash/alicedir
+[alice@localhost root]$ touch /trash/alicedir/filealice
+
+Скачайте изображения разного типа и произвольного размера в эти папки. 
+[alice@localhost root]$ cd /trash/alicedir/
+[alice@localhost alicedir]$ wget https://avatars.mds.yandex.net/get-pdb/216365/bcd00182-c77a-4be6-a525-9abe25155b16/s1200
+--2018-11-27 16:20:36--  https://avatars.mds.yandex.net/get-pdb/216365/bcd00182-c77a-4be6-a525-9abe25155b16/s1200
+Resolving avatars.mds.yandex.net (avatars.mds.yandex.net)... 87.250.247.183, 87.250.247.181, 87.250.247.184, ...
+Connecting to avatars.mds.yandex.net (avatars.mds.yandex.net)|87.250.247.183|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 187477 (183K) [image/jpeg]
+Saving to: ‘s1200’
+
+100%[==============================================================================================================================>] 187,477     --.-K/s   in 0.08s
+
+2018-11-27 16:20:42 (2.19 MB/s) - ‘s1200’ saved [187477/187477]
+
+[alice@localhost alicedir]$ wget https://avatars.mds.yandex.net/get-pdb/215709/53c7e8fb-d1c6-477d-900b-1400e97d692a/orig
+--2018-11-27 16:23:45--  https://avatars.mds.yandex.net/get-pdb/215709/53c7e8fb-d1c6-477d-900b-1400e97d692a/orig
+Resolving avatars.mds.yandex.net (avatars.mds.yandex.net)... 87.250.247.184, 87.250.247.183, 87.250.247.182, ...
+Connecting to avatars.mds.yandex.net (avatars.mds.yandex.net)|87.250.247.184|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 451240 (441K) [image/gif]
+Saving to: ‘orig’
+
+100%[==============================================================================================================================>] 451,240     1.92MB/s   in 0.2s
+
+2018-11-27 16:23:50 (1.92 MB/s) - ‘orig’ saved [451240/451240]
+
+ 
+[usertest@localhost usertestdir]$ wget https://image.freepik.com/free-icon/bmp-file-format-symbol_318-45802.jpg
+--2018-11-27 22:06:44--  https://image.freepik.com/free-icon/bmp-file-format-symbol_318-45802.jpg
+Resolving image.freepik.com (image.freepik.com)... 23.214.194.127, 2a02:26f0:18:489::30ec, 2a02:26f0:18:49b::30ec
+Connecting to image.freepik.com (image.freepik.com)|23.214.194.127|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 28624 (28K) [image/jpeg]
+Saving to: ‘bmp-file-format-symbol_318-45802.jpg’
+
+100%[==============================================================================================================================>] 28,624      --.-K/s   in 0.02s
+
+2018-11-27 22:06:49 (1.19 MB/s) - ‘bmp-file-format-symbol_318-45802.jpg’ saved [28624/28624]
+
+[usertest@localhost usertestdir]$ wget http://ldospk.ru/wikispk/images/b/b5/Анимация_россия_фризен.gif
+--2018-11-27 22:07:36--  http://ldospk.ru/wikispk/images/b/b5/%D0%90%D0%BD%D0%B8%D0%BC%D0%B0%D1%86%D0%B8%D1%8F_%D1%80%D0%BE%D1%81%D1%81%D0%B8%D1%8F_%D1%84%D1%80%D0%B8%D0%B7%D0%B5%D0%BD.gif
+Resolving ldospk.ru (ldospk.ru)... 31.220.20.142
+Connecting to ldospk.ru (ldospk.ru)|31.220.20.142|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 12166 (12K) [image/gif]
+Saving to: ‘Анимация_россия_фризен.gif’
+
+100%[==============================================================================================================================>] 12,166      --.-K/s   in 0s
+
+2018-11-27 22:07:42 (85.2 MB/s) - ‘Анимация_россия_фризен.gif’ saved [12166/12166]
+
+Сделайте им сокращенные и читабельные имена.
+[usertest@localhost usertestdir]$ ls
+bmp-file-format-symbol_318-45802.jpg  file  Анимация_россия_фризен.gif
+[usertest@localhost usertestdir]$ mv bmp{-file-format-symbol_318-45802.jpg,.jpg}
+[usertest@localhost usertestdir]$ ls
+bmp.jpg  file  Анимация_россия_фризен.gif
+
+Создание и загрузку произведите с временными интервалами. +
+
+Создайте ссылки для файлов и папок внутри директории trash.
+[usertest@localhost trash]$ ln -s /usertestdir/bmp.jpg soft
+[usertest@localhost trash]$ ls
+alicedir  soft  usertestdir
+[usertest@localhost trash]$ ln -s /usertestdir softdir
+[usertest@localhost trash]$ ls
+alicedir  soft  softdir  usertestdir
+
+[usertest@localhost trash]$ ln /usertestdir/bmp.jpg hard
+ln: failed to access ‘/usertestdir/bmp.jpg’: No such file or directory
+[usertest@localhost trash]$ ln /usertestdir/file hard
+ln: failed to access ‘/usertestdir/file’: No such file or directory
+[usertest@localhost trash]$ ln /usertestdir hard
+ln: failed to access ‘/usertestdir’: No such file or directory
+[usertest@localhost trash]$ ln usertestdir hard
+ln: ‘usertestdir’: hard link not allowed for directory
+
+ 
+[root@localhost trash]# ln -s /alicedir softalicedir
+[root@localhost trash]# ls alicedir/
+filealice  orig  s1200
+[root@localhost trash]# ln -s /alicedir/s1200 softalice1200
+[root@localhost trash]# ln -s /alicedir/s1200 softaliceorig
+
+Проверка:
+[root@localhost trash]# ll
+total 0
+drwxr-xr-x. 2 alice    sales    48 Nov 27 16:23 alicedir
+lrwxrwxrwx. 1 usertest usertest 20 Nov 27 23:22 soft -> /usertestdir/bmp.jpg
+lrwxrwxrwx. 1 root     root     15 Nov 28 00:16 softalice1200 -> /alicedir/s1200
+lrwxrwxrwx. 1 root     root      9 Nov 28 00:15 softalicedir -> /alicedir
+lrwxrwxrwx. 1 root     root     15 Nov 28 00:16 softaliceorig -> /alicedir/s1200
+lrwxrwxrwx. 1 usertest usertest 12 Nov 28 00:12 softdir -> /usertestdir
+drwxrwxr-x. 2 usertest usertest 87 Nov 27 22:23 usertestdir
+Используйте locate до и после загрузки. 
+До обновления БД locate не находил скаченные файлы
+[root@localhost ~]# updatedb
+ [root@localhost ~]# locate bmp.jpg
+/trash/usertestdir/bmp.jpg
+[root@localhost ~]# locate Анимация
+/trash/usertestdir/Анимация_россия_фризен.gif
+
+Используя find найдите все изображения. 
+[root@localhost trash]# find -name "*.jpg"
+./usertestdir/bmp.jpg
+ 
+[root@localhost trash]# find -user alice -size +10k
+./alicedir/s1200
+./alicedir/orig
+
+[root@localhost /]# find /trash -gid 1000 -name "Анимация*"
+/trash/usertestdir/Анимация_россия_фризен.gif
+
+Далее найдите изображения только определенного типа.  
+
+[root@localhost /]# find /trash -name "*gif"
+/trash/usertestdir/Анимация_россия_фризен.gif
+
+Найдите все ссылки. 
+Поиск Soft Link 
+[root@localhost /]# find /trash -type l
+/trash/soft
+/trash/softdir
+/trash/softalicedir
+/trash/softalice1200
+/trash/softaliceorig
+
+Поиск hard links
+[usertest@localhost trash]$ find . -samefile /trash/usertestdir/bmp.jpg
+./usertestdir/bmp.jpg
+./hardbmp
+-type с флагом l относится только к soft link (покажет все ссылки на файлы и директории, даже если первоначальный файл удален)
+-Чтобы найти hard link нашла следующее:
+find /trash -samefile /trash/usertestdir/bmp.jpg - но здесь покажет HL только к одному файлу.
+Для поиска всех HL в папке:
+find /trash -type f -links +1 -printf '%i %n %p\n'
+
+или
+
+find /trash -type f -printf '%n %p\n' | awk '$1 > 1{$1="";print}'
+Однако, если первоначальный файл удален, найти HL , по крайней мере, данными способами нельзя.
+
+Как выглядит:
+[usertest@localhost trash]$ find /trash -type f -links +1 -printf '%i %n %p\n'
+13832082 2 /trash/usertestdir/bmp.jpg
+13401284 2 /trash/usertestdir/file1
+13832082 2 /trash/hardbmp
+13401284 2 /trash/hardfile1
+[usertest@localhost trash]$ find /trash -type f -printf '%n %p\n' | awk '$1 > 1{$1="";print}'
+ /trash/usertestdir/bmp.jpg
+ /trash/usertestdir/file1
+ /trash/hardbmp
+ /trash/hardfile1
+
+Найдите только директории. 
+
+[root@localhost /]# find /trash -type d
+/trash
+/trash/usertestdir
+/trash/alicedir
+
+Сделайте произвольный поиск по размеру и дате создания.
+[root@localhost /]# find /trash -type f -ctime -1 -size +10k
+/trash/usertestdir/Анимация_россия_фризен.gif
+/trash/usertestdir/bmp.jpg
+/trash/alicedir/s1200
+/trash/alicedir/orig
+
+Удалите этот trash.
+
+[root@localhost /]# rm -R /trash
