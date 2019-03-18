@@ -1,0 +1,252 @@
+```Git homework
+1.
+    1. Create local repository named lection_14_hw
+[root@localhost ~]# mkdir lection_14_hw
+[root@localhost ~]# cd lection_14_hw
+[root@localhost lection_14_hw]# git init
+Initialized empty Git repository in /root/lection_14_hw/.git/
+
+    2. Create file "homework" in this repo and commit it in master branch
+[root@localhost lection_14_hw]# touch homework
+[root@localhost lection_14_hw]# git add homework
+[root@localhost lection_14_hw]# git commit -m "first commit"
+[master (root-commit) fe2c57a] first commit
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 homework
+
+    3. Create branch "hw_14" and insert anything in the file and commit these changes to this branch
+[root@localhost lection_14_hw]# git branch hw_14
+[root@localhost lection_14_hw]# git checkout hw_14
+Switched to branch 'hw_14'
+Проверка переключения в ветку:
+[root@localhost lection_14_hw]# git branch
+* hw_14
+  master
+[root@localhost lection_14_hw]# echo "changes" >> homework
+[root@localhost lection_14_hw]# head homework
+changes
+[root@localhost lection_14_hw]# git status
+warning: LF will be replaced by CRLF in homework.
+The file will have its original line endings in your working directory.
+# On branch hw_14
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#       modified:   homework
+#
+[root@localhost lection_14_hw]# git add homework
+[root@localhost lection_14_hw]# git commit -m "my changes"
+warning: LF will be replaced by CRLF in homework.
+The file will have its original line endings in your working directory.
+[hw_14 704dce5] my changes
+warning: LF will be replaced by CRLF in homework.
+The file will have its original line endings in your working directory.
+ 1 file changed, 1 insertion(+)
+[root@localhost lection_14_hw]#
+
+    4. Switch back to master branch and add anything else to the empty file "homework" there too
+[root@localhost lection_14_hw]# git checkout master
+Switched to branch 'master'
+[root@localhost lection_14_hw]# git branch
+  hw_14
+* master
+[root@localhost lection_14_hw]# head homework
+[root@localhost lection_14_hw]# echo "changes in master branch" >> homework
+[root@localhost lection_14_hw]# head homework
+changes in master branch
+
+
+[root@localhost lection_14_hw]# git add homework
+[root@localhost lection_14_hw]# git commit -m "changes in master branch"
+warning: LF will be replaced by CRLF in homework.
+The file will have its original line endings in your working directory.
+[master ce2883a] changes in master branch
+warning: LF will be replaced by CRLF in homework.
+The file will have its original line endings in your working directory.
+ 1 file changed, 1 insertion(+)
+
+[root@localhost lection_14_hw]# git status
+# On branch master
+nothing to commit, working directory clean
+
+    5. Merge branch "hw_14" to "master", keep only changes from "hw_14" branch
+[root@localhost lection_14_hw]# git merge hw_14
+Auto-merging homework
+CONFLICT (content): Merge conflict in homework
+Automatic merge failed; fix conflicts and then commit the result.
+_____________________________________________
+Файл: 
+<<<<<<< HEAD
+changes in master branch
+=======
+changes
+>>>>>>> hw_14
+____________________________________________
+[root@localhost lection_14_hw]# git add --all
+[root@localhost lection_14_hw]# git status
+# On branch master
+# All conflicts fixed but you are still merging.
+#   (use "git commit" to conclude merge)
+#
+# Changes to be committed:
+#
+#       modified:   homework
+#       new file:   homework.BACKUP.6605
+#       new file:   homework.BASE.6605
+#       new file:   homework.LOCAL.6605
+#       new file:   homework.REMOTE.6605
+#
+ [root@localhost lection_14_hw]# git commit -m "merging with hw_14"
+[master 0398237] merging with hw_14
+[root@localhost lection_14_hw]# git merge hw_14
+Already up-to-date.
+Проверка:
+[root@localhost lection_14_hw]# git status
+# On branch master
+nothing to commit, working directory clean
+
+    6. Switch to "hw_14" branch again and create new file "temp_file" and commit it
+[root@localhost lection_14_hw]# git checkout hw_14
+Switched to branch 'hw_14'
+[root@localhost lection_14_hw]# touch temp_file
+[root@localhost lection_14_hw]# git add temp_file
+[root@localhost lection_14_hw]# git status
+# On branch hw_14
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#       new file:   temp_file
+#
+[root@localhost lection_14_hw]# git commit -m "new creation of an empty file"
+[hw_14 e28c0c7] new creation of an empty file
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 temp_file
+
+    7. Revert to the first commit in "hw_14" branch
+[root@localhost lection_14_hw]# git log
+commit e28c0c74cd931504c6a060b265deba7ff9dc4e1b
+Author: maratkanova <keniyamarocco@yandex.ru>
+Date:   Sat Jan 5 18:23:40 2019 +0300
+
+    new creation of an empty file
+
+commit 704dce59a4e51f625799e50b15e884348efda131
+Author: maratkanova <keniyamarocco@yandex.ru>
+Date:   Sat Jan 5 17:08:39 2019 +0300
+
+    my changes
+
+commit fe2c57a582d29c3f97d6e435495ea02487942e59
+Author: maratkanova <keniyamarocco@yandex.ru>
+Date:   Fri Jan 4 01:56:16 2019 +0300
+
+    first commit
+[root@localhost lection_14_hw]# git checkout 704dce59a4e51f625799e50b15e884348efda131
+Note: checking out '704dce59a4e51f625799e50b15e884348efda131'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b new_branch_name
+
+HEAD is now at 704dce5... my changes
+
+2. 
+    1. Register in Github (if you are not registered yet) and create empty repository "lection_14_hw" 
++
+    2. Set remote from your local repo from task 1 to this new repo (https://help.github.com/articles/changing-a-remote-s-url/)
+
+[usertest@localhost .ssh]$ ssh-keygen -t rsa -b 4096 -C "keniyamarocco@yandex.ru"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/usertest/.ssh/id_rsa): /home/usertest/.ssh/github
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/usertest/.ssh/github.
+Your public key has been saved in /home/usertest/.ssh/github.pub.
+The key fingerprint is:
+SHA256:WBwVwueYQA8P5gl2SC7NLe4860STpWv88aSfDKkGczk keniyamarocco@yandex.ru
+The key's randomart image is:
++---[RSA 4096]----+
+|   .+o*.o.o.     |
+|   =.*.B.o.      |
+|  . = =.==       |
+|   o = oo .      |
+|    *.. S        |
+|  o=Eo .         |
+|   +O.+ .        |
+|   o.= B .       |
+|   o+ o.=        |
++----[SHA256]-----+
+
+
+
+ [usertest@localhost .ssh]$ eval $(ssh-agent -s)
+Agent pid 10706
+[usertest@localhost .ssh]$ ssh-add /home/usertest/.ssh/github
+Identity added: /home/usertest/.ssh/github (/home/usertest/.ssh/github)
+
+
+[root@localhost lection_14_hw]# git remote add origin git@github.com:maratkanova/lection_14_hw.git
+
+[root@localhost lection_14_hw]# git remote -v
+origin  git@github.com:maratkanova/lection_14_hw.git (fetch)
+origin  git@github.com:maratkanova/lection_14_hw.git (push)
+
+[root@localhost lection_14_hw]# git push -u origin master
+The authenticity of host 'github.com (140.82.118.3)' can't be established.
+RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.
+RSA key fingerprint is MD5:16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'github.com,140.82.118.3' (RSA) to the list of known hosts.
+Counting objects: 13, done.
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (13/13), 1.03 KiB | 0 bytes/s, done.
+Total 13 (delta 1), reused 0 (delta 0)
+remote: Resolving deltas: 100% (1/1), done.
+To git@github.com:maratkanova/lection_14_hw.git
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from origin.
+
+
+    3. Push all branches to the remote repo
+[root@localhost lection_14_hw]# git push --all
+Counting objects: 4, done.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 289 bytes | 0 bytes/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+remote:
+remote: Create a pull request for 'hw_14' on GitHub by visiting:
+remote:      https://github.com/maratkanova/lection_14_hw/pull/new/hw_14
+remote:
+To git@github.com:maratkanova/lection_14_hw.git
+ * [new branch]      hw_14 -> hw_14
+
+    4. Change everything in file "homework" in branch "hw_14" to one line "Hello Github", commit it and push
+[root@localhost lection_14_hw]# git checkout hw_14
+Switched to branch 'hw_14'
+[root@localhost lection_14_hw]# nano homework
+[root@localhost lection_14_hw]# git status
+# On branch hw_14
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#       modified:   homework
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+[root@localhost lection_14_hw]# git add homework
+[root@localhost lection_14_hw]# git commit -m "Hello Git is added"
+[hw_14 f93f3ad] Hello Git is added
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+[root@localhost lection_14_hw]# git push --all
+Counting objects: 5, done.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 298 bytes | 0 bytes/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+To git@github.com:maratkanova/lection_14_hw.git
+   e28c0c7..f93f3ad  hw_14 -> hw_14
